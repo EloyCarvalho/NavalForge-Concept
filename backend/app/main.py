@@ -6,7 +6,7 @@ import json
 import logging
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import Any
+from typing import Annotated, Any
 from uuid import uuid4
 
 from fastapi import Depends, FastAPI, HTTPException, status
@@ -31,10 +31,10 @@ from .db import CalculationJobRecord, get_session, init_db
 from .repository import get_project, list_projects, save_job, upsert_project
 from .schemas import EvaluationRequest, HealthResponse, JobResponse, ProjectListItem, ReportRequest
 
-
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
 logger = logging.getLogger("navalforge.api")
 settings = get_settings()
+SessionDep = Annotated[Session, Depends(get_session)]
 ROOT = Path(__file__).resolve().parents[2]
 EXAMPLES = ROOT / "examples"
 
@@ -87,7 +87,7 @@ def demo_projects() -> list[dict[str, Any]]:
     response_model=list[ProjectListItem],
     tags=["projects"],
 )
-def project_list(session: Session = Depends(get_session)) -> list[ProjectListItem]:
+def project_list(session: SessionDep) -> list[ProjectListItem]:
     records = list_projects(session)
     return [
         ProjectListItem(
@@ -100,7 +100,7 @@ def project_list(session: Session = Depends(get_session)) -> list[ProjectListIte
 
 
 @app.get(f"{settings.api_prefix}/projects/{{project_id}}", response_model=Project, tags=["projects"])
-def project_get(project_id: str, session: Session = Depends(get_session)) -> Project:
+def project_get(project_id: str, session: SessionDep) -> Project:
     record = get_project(session, project_id)
     if record is None:
         raise HTTPException(status_code=404, detail="Project not found")
@@ -111,7 +111,7 @@ def project_get(project_id: str, session: Session = Depends(get_session)) -> Pro
 def project_put(
     project_id: str,
     project: Project,
-    session: Session = Depends(get_session),
+    session: SessionDep,
 ) -> Project:
     if project_id != project.project_id:
         raise HTTPException(status_code=409, detail="Path and payload project IDs differ")
@@ -136,7 +136,7 @@ def evaluate(payload: EvaluationRequest) -> EvaluationResult:
     status_code=status.HTTP_202_ACCEPTED,
     tags=["jobs"],
 )
-def create_job(payload: EvaluationRequest, session: Session = Depends(get_session)) -> JobResponse:
+def create_job(payload: EvaluationRequest, session: SessionDep) -> JobResponse:
     job_id = f"JOB-{uuid4().hex.upper()}"
     record = CalculationJobRecord(
         job_id=job_id,
@@ -176,7 +176,7 @@ def create_job(payload: EvaluationRequest, session: Session = Depends(get_sessio
 
 
 @app.get(f"{settings.api_prefix}/jobs/{{job_id}}", response_model=JobResponse, tags=["jobs"])
-def get_job(job_id: str, session: Session = Depends(get_session)) -> JobResponse:
+def get_job(job_id: str, session: SessionDep) -> JobResponse:
     record = session.get(CalculationJobRecord, job_id)
     if record is None:
         raise HTTPException(status_code=404, detail="Job not found")

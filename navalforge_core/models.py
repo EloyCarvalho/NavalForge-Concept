@@ -68,7 +68,7 @@ class Geometry(StrictModel):
     offsets: list[dict[str, float]] = Field(default_factory=list)
 
     @model_validator(mode="after")
-    def validate_proportions(self) -> "Geometry":
+    def validate_proportions(self) -> Geometry:
         if self.lwl_m > self.loa_m:
             raise ValueError("lwl_m cannot exceed loa_m")
         if self.chine_beam_m > self.beam_m:
@@ -158,7 +158,7 @@ class Mission(StrictModel):
     payload_kg: float = Field(default=300.0, ge=0.0, le=50000.0)
 
     @model_validator(mode="after")
-    def validate_speeds(self) -> "Mission":
+    def validate_speeds(self) -> Mission:
         if self.cruise_speed_kn > self.max_speed_kn:
             raise ValueError("cruise_speed_kn cannot exceed max_speed_kn")
         return self

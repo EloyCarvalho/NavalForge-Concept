@@ -7,7 +7,6 @@ from navalforge_core.models import Project
 
 from .config import get_settings
 
-
 settings = get_settings()
 celery_app = Celery(
     "navalforge",

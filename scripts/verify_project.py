@@ -9,7 +9,6 @@ from pathlib import Path
 
 from navalforge_core.models import Project
 
-
 ROOT = Path(__file__).resolve().parents[1]
 
 

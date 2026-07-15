@@ -18,7 +18,6 @@ from reportlab.platypus import PageBreak, Paragraph, SimpleDocTemplate, Spacer, 
 
 from .models import EvaluationResult, Project
 
-
 DISCLAIMER = (
     "Preliminary engineering result. It does not replace the responsible engineer, "
     "formal approval, validated software, detailed structural analysis or verified input data."
@@ -66,7 +65,7 @@ def export_xlsx(result: EvaluationResult | dict[str, Any], path: Path) -> Path:
     summary.append([])
     summary.append(["Indicator", "Value"])
     for key, value in data["indicators"].items():
-        if isinstance(value, (str, int, float, bool)) or value is None:
+        if isinstance(value, str | int | float | bool) or value is None:
             summary.append([key, value])
 
     requirements = book.create_sheet("Requirements")

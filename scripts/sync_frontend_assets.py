@@ -3,7 +3,6 @@
 from pathlib import Path
 from shutil import copy2
 
-
 ROOT = Path(__file__).resolve().parents[1]
 PUBLIC = ROOT / "frontend" / "public" / "demo"
 REPORTS = PUBLIC / "reports"

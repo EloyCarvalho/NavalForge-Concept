@@ -7,7 +7,6 @@ from math import ceil, sqrt
 from .constants import GRAVITY_M_S2
 from .models import HydrostaticsResult, Project, WeightSummary
 
-
 MATERIALS = {
     "aluminum": {
         "allowable_mpa": 95.0,

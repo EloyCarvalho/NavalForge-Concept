@@ -9,7 +9,6 @@ from navalforge_core.evaluator import evaluate_project
 from navalforge_core.models import Project
 from navalforge_core.reports import generate_report_bundle
 
-
 ROOT = Path(__file__).resolve().parents[1]
 
 

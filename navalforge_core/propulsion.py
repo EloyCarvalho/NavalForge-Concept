@@ -6,8 +6,8 @@ import json
 from pathlib import Path
 from typing import Any
 
-from .resistance import calculate_resistance_point
 from .models import HydrostaticsResult, Project, WeightSummary
+from .resistance import calculate_resistance_point
 
 
 def required_power(

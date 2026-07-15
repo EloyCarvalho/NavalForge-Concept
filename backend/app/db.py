@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Generator
 from datetime import UTC, datetime
-from typing import Generator
 
 from sqlalchemy import JSON, DateTime, String, Text, create_engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, sessionmaker
