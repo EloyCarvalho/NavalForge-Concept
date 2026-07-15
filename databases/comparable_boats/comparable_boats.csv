@@ -1,0 +1,4 @@
+id,type,loa_m,beam_m,displacement_kg,max_speed_kn,material,source
+SYN-7M-01,service,7.0,2.35,2450,34,aluminum,synthetic demonstration
+SYN-10M-01,patrol,10.0,3.10,7400,38,aluminum,synthetic demonstration
+SYN-12M-01,rescue,12.0,3.55,14500,35,composite,synthetic demonstration

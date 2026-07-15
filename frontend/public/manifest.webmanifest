@@ -1,0 +1,22 @@
+{
+  "id": "/",
+  "name": "NavalForge Concept",
+  "short_name": "NavalForge",
+  "description": "Plataforma aberta, modular e auditável para projeto conceitual e básico de lanchas.",
+  "lang": "pt-BR",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#04151e",
+  "theme_color": "#061923",
+  "categories": ["engineering", "productivity", "education"],
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Painel inicial", "short_name": "Painel", "url": "/" }
+  ]
+}

@@ -1,0 +1,5 @@
+[
+  {"id":"NAV-001","description":"Demonstrative navigation suite","mass_kg":38,"power_w":420,"price_brl_demo":65000},
+  {"id":"SAFE-001","description":"Demonstrative coastal safety outfit","mass_kg":65,"power_w":0,"price_brl_demo":28000},
+  {"id":"ELEC-001","description":"Demonstrative DC electrical package","mass_kg":72,"power_w":1800,"price_brl_demo":42000}
+]

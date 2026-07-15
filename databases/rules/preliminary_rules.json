@@ -1,0 +1,11 @@
+{
+  "version":"demo-0.1.5",
+  "status":"configurable preliminary screening only",
+  "criteria":{
+    "minimum_gm_m":0.35,
+    "minimum_freeboard_m":0.40,
+    "maximum_porpoising_risk":0.60,
+    "savitsky_deadrise_range_deg":[8,30]
+  },
+  "notice":"These values do not represent automatic statutory approval. The responsible engineer selects the applicable rule set."
+}

@@ -1,0 +1,7 @@
+requirement_id,description,kind,required,actual,unit,passed
+REQ12-LOA,Overall length shall not exceed 12.50 m,mandatory,12.5,12.0,m,True
+REQ12-SPEED,Maximum speed shall be at least 32 kn,mandatory,32.0,35.0,kn,True
+REQ12-RANGE,Range shall be at least 220 nmi,mandatory,220.0,557.5582257430633,nmi,True
+REQ12-GM,Preliminary corrected GM shall exceed 0.50 m,mandatory,0.5,0.709702491315202,m,True
+REQ12-FB,Preliminary freeboard shall exceed 0.60 m,mandatory,0.6,0.9772466208572445,m,True
+REQ12-PAYLOAD,Payload shall be at least 1000 kg,mandatory,1000.0,1000.0,kg,True
