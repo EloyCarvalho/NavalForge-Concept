@@ -13,6 +13,7 @@ import time
 import tomllib
 from pathlib import Path
 from typing import Any
+from uuid import uuid4
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
@@ -102,10 +103,73 @@ def evaluate_project() -> dict[str, Any]:
     return result
 
 
+def verify_revision_persistence() -> dict[str, Any]:
+    """Create, revise and remove a synthetic project in the live Neon database."""
+
+    project = json.loads(PROJECT_PATH.read_text(encoding="utf-8"))
+    project["project_id"] = f"NF-SMOKE-{uuid4().hex[:12].upper()}"
+    project["name"] = "Temporary automated persistence smoke"
+    created = False
+    try:
+        create_body = json.dumps(
+            {"project": project, "change_summary": "Automated live smoke P1"}
+        ).encode()
+        created_payload, _ = request_json(
+            Request(
+                f"{API_URL}/api/v1/projects",
+                data=create_body,
+                method="POST",
+                headers={"Content-Type": "application/json", "Origin": PWA_ORIGIN},
+            )
+        )
+        created = True
+        if created_payload.get("project", {}).get("revision") != "P1":
+            raise RuntimeError("Project creation did not preserve revision P1")
+
+        revised_project = created_payload["project"]
+        revised_project["description"] = "Revision persistence smoke update"
+        revision_body = json.dumps(
+            {
+                "project": revised_project,
+                "expected_revision": "P1",
+                "change_summary": "Automated live smoke P2",
+            }
+        ).encode()
+        revised_payload, _ = request_json(
+            Request(
+                f"{API_URL}/api/v1/projects/{project['project_id']}/revisions",
+                data=revision_body,
+                method="POST",
+                headers={"Content-Type": "application/json", "Origin": PWA_ORIGIN},
+            )
+        )
+        if revised_payload.get("project", {}).get("revision") != "P2":
+            raise RuntimeError("Project update did not increment revision to P2")
+
+        history, _ = request_json(
+            Request(f"{API_URL}/api/v1/projects/{project['project_id']}/revisions")
+        )
+        labels = {item.get("revision") for item in history}
+        if labels != {"P1", "P2"}:
+            raise RuntimeError(f"Unexpected revision history: {labels!r}")
+        return {"project_id": project["project_id"], "revisions": sorted(labels)}
+    finally:
+        if created:
+            request = Request(
+                f"{API_URL}/api/v1/projects/{project['project_id']}",
+                method="DELETE",
+                headers={"Origin": PWA_ORIGIN},
+            )
+            with urlopen(request, timeout=60) as response:  # noqa: S310 - fixed HTTPS URL
+                if response.status != 204:
+                    raise RuntimeError(f"Smoke cleanup returned HTTP {response.status}")
+
+
 def main() -> int:
     ready = wait_until_ready()
     verify_preflight()
     result = evaluate_project()
+    persistence = verify_revision_persistence() if VERIFY_DEPLOYED_VERSION else None
     summary = {
         "api": API_URL,
         "version": ready.get("version"),
@@ -115,6 +179,7 @@ def main() -> int:
         "status": result["status"],
         "variants": len(result.get("variants", [])),
         "mandatory_gate_passed": result["requirements"]["mandatory_gate_passed"],
+        "persistence": persistence,
     }
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     return 0
