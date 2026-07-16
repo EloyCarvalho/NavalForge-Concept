@@ -206,7 +206,11 @@ function RequirementsEditor({ project, onChange }: EditorProps) {
               <SelectField label="Classificação" value={requirement.kind} options={kindOptions} onChange={(value) => updateRequirement(index, { kind: value as RequirementKind })} />
               <Field label="Métrica calculada" value={requirement.metric ?? ''} onChange={(value) => updateRequirement(index, { metric: value || null })} />
               <SelectField label="Operador" value={requirement.operator} options={[[">=", 'Maior ou igual'], ['<=', 'Menor ou igual'], ['==', 'Igual'], ['in', 'Pertence à lista'], ['defined', 'Definido']]} onChange={(value) => updateRequirement(index, { operator: value as Requirement['operator'] })} />
-              <Field label="Valor" value={Array.isArray(requirement.value) ? requirement.value.join(', ') : requirement.value ?? ''} onChange={(value) => updateRequirement(index, { value: requirementValue(value) })} />
+              <Field label="Valor" value={Array.isArray(requirement.value) ? requirement.value.join(', ') : requirement.value ?? ''} onChange={(value) => updateRequirement(index, {
+                value: requirement.operator === 'in'
+                  ? value.split(',').map((item) => item.trim()).filter(Boolean)
+                  : requirementValue(value),
+              })} />
               <Field label="Unidade" value={requirement.unit} onChange={(value) => updateRequirement(index, { unit: value })} />
               <Field label="Prioridade" type="number" min={1} max={5} step={1} value={requirement.priority} onChange={(value) => updateRequirement(index, { priority: asNumber(value) })} />
               <Field label="Origem" value={requirement.source} onChange={(value) => updateRequirement(index, { source: value })} />
