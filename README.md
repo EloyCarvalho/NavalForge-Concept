@@ -50,7 +50,7 @@ Siga o passo a passo em [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). Nunca grave a
 
 Serviços demonstrativos publicados:
 
-- PWA: <https://navalforge3d14.pages.dev>
+- PWA: <https://navalforgeconcept.pages.dev>
 - API: <https://navalforge-concept-api.onrender.com>
 - prontidão da API e banco: <https://navalforge-concept-api.onrender.com/ready>
 - documentação OpenAPI: <https://navalforge-concept-api.onrender.com/docs>

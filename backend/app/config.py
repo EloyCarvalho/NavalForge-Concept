@@ -5,6 +5,11 @@ from functools import lru_cache
 from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+PRODUCTION_PWA_ORIGINS = (
+    "https://navalforgeconcept.pages.dev",
+    "https://navalforge3d14.pages.dev",
+)
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
@@ -27,6 +32,10 @@ class Settings(BaseSettings):
             origin = item.strip().rstrip("/")
             if origin and origin not in origins:
                 origins.append(origin)
+        if self.environment.strip().lower() in {"production", "prod"}:
+            for origin in PRODUCTION_PWA_ORIGINS:
+                if origin not in origins:
+                    origins.append(origin)
         return origins
 
     @property

@@ -10,7 +10,7 @@ available as an explicit offline fallback.
 
 Public endpoints:
 
-- PWA: <https://navalforge3d14.pages.dev>
+- PWA: <https://navalforgeconcept.pages.dev>
 - API: <https://navalforge-concept-api.onrender.com>
 - database-aware readiness: <https://navalforge-concept-api.onrender.com/ready>
 - OpenAPI documentation: <https://navalforge-concept-api.onrender.com/docs>
@@ -34,7 +34,8 @@ Public endpoints:
 - Docker Compose parsed successfully;
 - the API image built and passed `/health` and `/ready` in a container;
 - the live Render/Neon readiness check passed;
-- CORS accepted `https://navalforge3d14.pages.dev`;
+- CORS accepts `https://navalforgeconcept.pages.dev` and the legacy
+  `https://navalforge3d14.pages.dev` origin;
 - the live API evaluated `NF-DEMO-SERVICE-7M`, generated 9 variants, passed the
   mandatory gate and returned NF-ECO, NF-BALANCED and NF-PERFORMANCE;
 - the production dependency audit reported zero vulnerabilities;
@@ -52,12 +53,12 @@ Artifact:
 2. Choose **Deployments**, the overflow menu and **Create deployment**.
 3. Keep **Production** selected.
 4. Upload `NavalForge-PWA-v0.1.6-LIVE.zip` and choose **Save and deploy**.
-5. Open <https://navalforge3d14.pages.dev> and confirm the header shows v0.1.6.
+5. Open <https://navalforgeconcept.pages.dev> and confirm the header shows v0.1.6.
 6. Select a project and touch **Executar projeto**; wait for **BACKEND ONLINE**.
 
 The first request can take longer when the free Render service is sleeping.
 If Android keeps the prior package, uninstall the old PWA and clear the stored
-site data for `navalforge3d14.pages.dev` before reinstalling.
+site data for the previous Pages domain before reinstalling.
 
 ## Technical limitations
 

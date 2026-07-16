@@ -17,7 +17,7 @@ services:
       - key: DATABASE_URL
         sync: false
       - key: CORS_ORIGINS
-        value: https://navalforge3d14.pages.dev
+        value: https://navalforgeconcept.pages.dev,https://navalforge3d14.pages.dev
       - key: CELERY_ENABLED
         value: "false"
       - key: STORAGE_DIR

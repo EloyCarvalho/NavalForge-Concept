@@ -20,7 +20,7 @@ API_URL = os.environ.get(
     "LIVE_API_URL", "https://navalforge-concept-api.onrender.com"
 ).rstrip("/")
 PWA_ORIGIN = os.environ.get(
-    "LIVE_PWA_ORIGIN", "https://navalforge3d14.pages.dev"
+    "LIVE_PWA_ORIGIN", "https://navalforgeconcept.pages.dev"
 ).rstrip("/")
 PROJECT_PATH = Path(__file__).resolve().parents[1] / "examples" / "nf-demo-service-7m.json"
 PYPROJECT_PATH = Path(__file__).resolve().parents[1] / "pyproject.toml"
