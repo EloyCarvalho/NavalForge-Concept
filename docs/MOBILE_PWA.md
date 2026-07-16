@@ -32,11 +32,16 @@ The current public PWA is <https://navalforgeconcept.pages.dev>. After opening i
 select a case and touch **Executar projeto**. A successful live calculation
 changes the status seal from **DEMO OFFLINE** to **BACKEND ONLINE**.
 
+To create an editable project, open **Projetos**, touch **Criar projeto editável**,
+then change mission, dimensions, configuration or requirements. **Salvar e
+recalcular** creates the next immutable revision in Neon and updates all results.
+The public demonstration has no login yet; do not enter confidential data.
+
 ## Remove an old PWA on Android
 
 Long-press the NavalForge icon, open **App info** and choose **Uninstall**. If an
 old service worker remains in Chrome, also clear the site's stored data before
-reinstalling. The cache name includes the version and 0.1.6 removes earlier
+reinstalling. The cache name includes the version and 0.1.7 removes earlier
 NavalForge caches during activation.
 
 ## 3D orientation
