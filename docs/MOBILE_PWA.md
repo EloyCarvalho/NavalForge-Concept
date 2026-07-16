@@ -23,16 +23,20 @@ three cases enter the offline cache.
 Deploy FastAPI over HTTPS and build with:
 
 ```bash
-VITE_API_URL=https://api.example.com npm run build
+VITE_API_URL=https://navalforge-concept-api.onrender.com npm run build
 ```
 
 Add the PWA HTTPS origin to `CORS_ORIGINS` on the backend.
+
+The current public PWA is <https://navalforge3d14.pages.dev>. After opening it,
+select a case and touch **Executar projeto**. A successful live calculation
+changes the status seal from **DEMO OFFLINE** to **BACKEND ONLINE**.
 
 ## Remove an old PWA on Android
 
 Long-press the NavalForge icon, open **App info** and choose **Uninstall**. If an
 old service worker remains in Chrome, also clear the site's stored data before
-reinstalling. The cache name includes the version and 0.1.5 removes earlier
+reinstalling. The cache name includes the version and 0.1.6 removes earlier
 NavalForge caches during activation.
 
 ## 3D orientation

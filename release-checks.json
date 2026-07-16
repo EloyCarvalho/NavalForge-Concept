@@ -1,22 +1,51 @@
 {
   "product": "NavalForge Concept",
-  "version": "0.1.5",
-  "release": "reconstructed",
-  "checked_at": "2026-07-15",
+  "version": "0.1.6",
+  "release": "live-backend",
+  "checked_at": "2026-07-16",
   "checks": {
-    "python_unittest": { "passed": 21, "failed": 0 },
-    "demo_projects": { "evaluated": 3, "mandatory_gate_passed": 3 },
-    "report_formats": ["pdf", "docx", "xlsx", "csv", "json"],
-    "typescript": "passed",
+    "python_pytest": {
+      "passed": 25,
+      "failed": 0,
+      "coverage_percent": 92.14,
+      "environment": "GitHub Actions Python 3.12"
+    },
+    "demo_projects": {
+      "evaluated": 3,
+      "mandatory_gate_passed": 3
+    },
+    "report_formats": [
+      "pdf",
+      "docx",
+      "xlsx",
+      "csv",
+      "json"
+    ],
+    "typescript_build": "passed",
     "eslint": "passed with zero warnings",
-    "vite_production_build": "passed",
-    "pwa_hashed_asset_cache": "verified",
-    "npm_production_audit": "0 vulnerabilities",
-    "http_smoke_test": "passed",
+    "ruff": "passed",
     "python_compileall": "passed",
-    "docker_compose_yaml": "parsed and service graph verified",
-    "live_fastapi_start": "not run: dependencies unavailable in reconstruction container",
-    "docker_image_build": "not run: Docker unavailable in reconstruction container"
+    "vite_live_api_build": "passed",
+    "pwa_cache": "v0.1.6 with 5 hashed production assets",
+    "npm_production_audit": "0 vulnerabilities",
+    "static_http_smoke": "passed for index.html, release.json and sw.js",
+    "docker_compose": "configuration parsed successfully",
+    "docker_backend": "image built; /health and /ready passed in container",
+    "live_render_neon": {
+      "readiness": "passed",
+      "cors_preflight": "passed for https://navalforge3d14.pages.dev",
+      "evaluation": "passed",
+      "project_id": "NF-DEMO-SERVICE-7M",
+      "variants": 9,
+      "mandatory_gate_passed": true,
+      "algorithm_version": "navalforge-core-0.1.5",
+      "deployed_api_version_at_test_time": "0.1.5"
+    },
+    "zip_integrity": {
+      "file": "NavalForge-PWA-v0.1.6-LIVE.zip",
+      "size_bytes": 1986192,
+      "sha256": "9d4d3e893983bfde05f489ccd06d8976f55b0d0cce66d5539448cf995d5fa63d"
+    }
   },
-  "technical_notice": "Automated software tests are not validation of a real vessel or statutory approval."
+  "technical_notice": "Automated software tests are not validation of a real vessel or statutory approval. The live smoke tested API 0.1.5 before merge; Render deploys app version 0.1.6 from main after this release is integrated. The engineering algorithm remains navalforge-core-0.1.5."
 }

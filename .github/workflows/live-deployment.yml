@@ -1,0 +1,27 @@
+name: Live Deployment Smoke
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/live-deployment.yml"
+      - "scripts/smoke_live_backend.py"
+      - "backend/**"
+      - "frontend/**"
+
+jobs:
+  render-neon-pwa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      LIVE_API_URL: https://navalforge-concept-api.onrender.com
+      LIVE_PWA_ORIGIN: https://navalforge3d14.pages.dev
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify readiness, CORS and a full engineering evaluation
+        run: python scripts/smoke_live_backend.py

@@ -2,7 +2,7 @@
 
 **Plataforma aberta, modular e auditável para projeto conceitual e básico de lanchas.**
 
-Versão reconstruída: **0.1.5**
+Versão pública conectada: **0.1.6**
 
 NavalForge Concept transforma requisitos de missão em alternativas preliminares
 de lanchas monocasco de planeio entre aproximadamente 5 e 15 m. O mesmo pipeline
@@ -47,6 +47,13 @@ para caber no ambiente demonstrativo gratuito.
 
 Siga o passo a passo em [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). Nunca grave a
 `DATABASE_URL` do Neon no GitHub; ela deve ser cadastrada como segredo no Render.
+
+Serviços demonstrativos publicados:
+
+- PWA: <https://navalforge3d14.pages.dev>
+- API: <https://navalforge-concept-api.onrender.com>
+- prontidão da API e banco: <https://navalforge-concept-api.onrender.com/ready>
+- documentação OpenAPI: <https://navalforge-concept-api.onrender.com/docs>
 
 ## Execução mais simples — Docker
 
@@ -110,22 +117,23 @@ VITE_API_URL=http://localhost:8000 npm run dev
 $env:VITE_API_URL="http://localhost:8000"; npm run dev
 ```
 
-## PWA somente demonstrativa
+## PWA instalável
 
-A interface funciona sem backend com os três resultados previamente calculados:
+A interface conserva três resultados previamente calculados para contingência
+offline. A distribuição pública 0.1.6 é compilada com a API do Render:
 
 ```bash
 cd frontend
 npm install
-npm run build
+VITE_API_URL=https://navalforge-concept-api.onrender.com npm run build
 npm run preview
 ```
 
 Acesse o endereço mostrado, visite uma vez conectado e use **Instalar app**.
-Quando `VITE_API_URL` estiver vazio, o botão **Executar projeto** carrega o caso
-offline sem tentar interpretar respostas HTML como JSON. Quando a variável
-contiver uma API válida, a PWA calcula no backend e retorna automaticamente ao
-modo demonstrativo se ele ficar indisponível.
+Quando `VITE_API_URL` contiver a API pública, o botão **Executar projeto** realiza
+um novo cálculo no backend e o selo muda para **BACKEND ONLINE**. Quando a
+variável estiver vazia, ou se o backend ficar indisponível, a PWA usa o caso
+offline sem tentar interpretar respostas HTML como JSON.
 
 Consulte [docs/MOBILE_PWA.md](docs/MOBILE_PWA.md) para Android e publicação.
 
@@ -234,7 +242,7 @@ Todos os dados são sintéticos e identificados como demonstração:
 
 Relatórios ficam em `examples/generated/` e também são empacotados na PWA.
 
-## Limitações reais da versão 0.1.5
+## Limitações reais da versão 0.1.6
 
 - casco paramétrico simplificado; offsets verificados ainda não dirigem toda a interface;
 - curva GZ por aproximação de costados verticais, não geometria inclinada completa;
@@ -249,9 +257,9 @@ Relatórios ficam em `examples/generated/` e também são empacotados na PWA.
 
 ## Próximo incremento recomendado
 
-1. Publicar o repositório e ligar a PWA a implantação automática.
-2. Implantar backend, PostgreSQL, Redis e worker em ambiente Docker.
-3. Tornar requisitos, geometria, pesos e condições totalmente editáveis na PWA.
+1. Tornar requisitos, geometria, pesos e condições totalmente editáveis na PWA.
+2. Adicionar autenticação e separar projetos por usuário/organização.
+3. Habilitar Redis/Celery para jobs pesados fora do plano demonstrativo gratuito.
 4. Importar offsets e malhas verificadas.
 5. Validar módulo a módulo com cálculos manuais, exemplos publicados e ensaios.
 6. Integrar o módulo CFD/OpenFOAM como job pesado separado.

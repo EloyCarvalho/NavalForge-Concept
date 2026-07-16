@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     app_name: str = "NavalForge Concept API"
-    app_version: str = "0.1.5"
+    app_version: str = "0.1.6"
     environment: str = "development"
     api_prefix: str = "/api/v1"
     database_url: str = "sqlite:///./navalforge.db"

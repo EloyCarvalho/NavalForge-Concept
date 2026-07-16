@@ -1,8 +1,8 @@
 import type { Evaluation, Project, RunResult } from './types'
 
 const RAW_API_URL = import.meta.env.VITE_API_URL ?? ''
-const API_ENABLED = RAW_API_URL.length > 0
-const API_BASE = (RAW_API_URL === 'same-origin' ? '' : RAW_API_URL).replace(/\/$/, '')
+export const apiEnabled = RAW_API_URL.length > 0
+export const apiBaseUrl = (RAW_API_URL === 'same-origin' ? '' : RAW_API_URL).replace(/\/$/, '')
 
 export async function loadJson<T>(url: string): Promise<T> {
   const response = await fetch(url, { cache: 'no-cache' })
@@ -18,7 +18,7 @@ export async function evaluateProject(
   project: Project,
   offlineResultUrl: string,
 ): Promise<RunResult> {
-  if (!API_ENABLED) {
+  if (!apiEnabled) {
     return {
       evaluation: await loadJson<Evaluation>(offlineResultUrl),
       mode: 'offline',
@@ -26,7 +26,7 @@ export async function evaluateProject(
     }
   }
   try {
-    const response = await fetch(`${API_BASE}/api/v1/evaluate`, {
+    const response = await fetch(`${apiBaseUrl}/api/v1/evaluate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ project, include_variants: true }),

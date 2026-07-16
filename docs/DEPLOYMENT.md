@@ -28,6 +28,10 @@ the backend Dockerfile, `/ready` health checks and the production PWA origin.
 4. Apply the Blueprint and wait for the service to report **Live**.
 5. Verify `https://<service>.onrender.com/health`, `/ready` and `/docs`.
 
+The current public API is <https://navalforge-concept-api.onrender.com>; its
+database-aware readiness endpoint is
+<https://navalforge-concept-api.onrender.com/ready>.
+
 The free Render service can sleep after inactivity, so its first request can be
 slow. Its filesystem is ephemeral; PostgreSQL data remains in Neon, while a
 generated report file exists only long enough to be downloaded.
@@ -39,7 +43,7 @@ Rebuild the frontend with the exact Render origin (without a trailing slash):
 ```bash
 cd frontend
 npm ci
-VITE_API_URL=https://<service>.onrender.com npm run build
+VITE_API_URL=https://navalforge-concept-api.onrender.com npm run build
 ```
 
 Publish `frontend/dist` as a new Cloudflare Pages production deployment. The API
@@ -79,9 +83,10 @@ npm ci
 npm run build
 ```
 
-Publish the contents of `frontend/dist`. Leave `VITE_API_URL` empty for the
-offline demonstration. Set it to an HTTPS backend origin to enable live
-calculations. CORS must list the PWA origin.
+Publish the contents of `frontend/dist`. The public 0.1.6 package uses
+`https://navalforge-concept-api.onrender.com`; leave `VITE_API_URL` empty only
+when intentionally building the offline demonstration. CORS must list the PWA
+origin.
 
 ## Database migrations
 
