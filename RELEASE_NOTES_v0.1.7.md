@@ -12,6 +12,7 @@ editable, revisioned project workspace while preserving the three offline cases.
 - edit project identity, mission, principal dimensions and technical configuration;
 - add, edit and remove classified requirements on Android;
 - reopen an historical revision as a draft without deleting later history;
+- delete a demonstrative project only after an explicit confirmation;
 - save and automatically recalculate through the hosted engineering backend;
 - generate PDF, DOCX, XLSX, CSV and JSON reports for persisted projects;
 - retain offline demonstrations, the Y-up 3D viewer and mandatory requirement gate.
