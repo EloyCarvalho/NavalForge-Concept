@@ -13,9 +13,9 @@ import time
 import tomllib
 from pathlib import Path
 from typing import Any
-from uuid import uuid4
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
+from uuid import uuid4
 
 API_URL = os.environ.get(
     "LIVE_API_URL", "https://navalforge-concept-api.onrender.com"
