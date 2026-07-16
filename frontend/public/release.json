@@ -1,10 +1,12 @@
 {
   "product": "NavalForge Concept",
-  "version": "0.1.5",
-  "release": "reconstructed",
-  "date": "2026-07-15",
+  "version": "0.1.6",
+  "release": "live-backend",
+  "date": "2026-07-16",
   "algorithm_version": "navalforge-core-0.1.5",
   "coordinate_system_3d": "X longitudinal, Y vertical up, Z transverse",
   "offline_demo_projects": 3,
+  "live_backend": true,
+  "backend_url": "https://navalforge-concept-api.onrender.com",
   "notice": "Preliminary engineering software; not statutory approval."
 }

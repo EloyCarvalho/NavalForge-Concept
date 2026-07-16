@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
-import { evaluateProject, loadJson } from './api'
+import { apiEnabled, evaluateProject, loadJson } from './api'
 import { Dashboard } from './components/Dashboard'
 import { ModuleScreen } from './components/ModuleScreen'
 import type { DemoDescriptor, Evaluation, Project, RunResult } from './types'
+import { APP_VERSION } from './version'
 
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>
@@ -84,7 +85,11 @@ export default function App() {
         setProject(loadedProject)
         setEvaluation(loadedEvaluation)
         setRunMode('offline')
-        setRunMessage('Modo demonstrativo offline: resultado sintético previamente calculado. Configure o backend para calcular alterações.')
+        setRunMessage(
+          apiEnabled
+            ? 'Resultado demonstrativo carregado. Toque em Executar projeto para realizar um novo cálculo no backend auditável.'
+            : 'Modo demonstrativo offline: resultado sintético previamente calculado. Configure o backend para calcular alterações.',
+        )
         localStorage.setItem('navalforge-demo', descriptor.key)
       })
       .catch((reason: unknown) => {
@@ -147,7 +152,7 @@ export default function App() {
           <span /><span /><span />
         </button>
         <div className="header-title">
-          <span className="eyebrow">COMMAND CENTER <b>v0.1.5</b></span>
+          <span className="eyebrow">COMMAND CENTER <b>v{APP_VERSION}</b></span>
           <h1>{titleByScreen[screen] ?? 'NavalForge Concept'}</h1>
         </div>
         <div className="header-actions">

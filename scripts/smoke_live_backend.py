@@ -1,0 +1,114 @@
+"""Exercise the public Render API and its production CORS contract.
+
+This script deliberately uses only the Python standard library so it can run
+from a clean GitHub Actions runner.  It never prints database credentials.
+"""
+
+from __future__ import annotations
+
+import json
+import os
+import sys
+import time
+from pathlib import Path
+from typing import Any
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
+
+API_URL = os.environ.get(
+    "LIVE_API_URL", "https://navalforge-concept-api.onrender.com"
+).rstrip("/")
+PWA_ORIGIN = os.environ.get(
+    "LIVE_PWA_ORIGIN", "https://navalforge3d14.pages.dev"
+).rstrip("/")
+PROJECT_PATH = Path(__file__).resolve().parents[1] / "examples" / "nf-demo-service-7m.json"
+
+
+def request_json(request: Request, timeout: int = 300) -> tuple[Any, Any]:
+    with urlopen(request, timeout=timeout) as response:  # noqa: S310 - fixed HTTPS URL
+        content_type = response.headers.get("content-type", "")
+        if "json" not in content_type:
+            raise RuntimeError(f"Expected JSON, received {content_type!r}")
+        return json.load(response), response.headers
+
+
+def wait_until_ready() -> dict[str, Any]:
+    last_error: Exception | None = None
+    for attempt in range(1, 31):
+        try:
+            payload, _ = request_json(Request(f"{API_URL}/ready"), timeout=30)
+            if payload.get("status") == "healthy":
+                return payload
+            last_error = RuntimeError(f"Unexpected readiness payload: {payload!r}")
+        except (HTTPError, URLError, TimeoutError, RuntimeError) as exc:
+            last_error = exc
+        print(f"Readiness attempt {attempt}/30 failed; retrying in 10 seconds")
+        time.sleep(10)
+    raise RuntimeError(f"API did not become ready: {last_error}")
+
+
+def verify_preflight() -> None:
+    request = Request(
+        f"{API_URL}/api/v1/evaluate",
+        method="OPTIONS",
+        headers={
+            "Origin": PWA_ORIGIN,
+            "Access-Control-Request-Method": "POST",
+            "Access-Control-Request-Headers": "content-type",
+        },
+    )
+    with urlopen(request, timeout=60) as response:  # noqa: S310 - fixed HTTPS URL
+        allowed_origin = response.headers.get("access-control-allow-origin")
+        if allowed_origin != PWA_ORIGIN:
+            raise RuntimeError(
+                f"CORS rejected PWA origin: expected {PWA_ORIGIN!r}, got {allowed_origin!r}"
+            )
+
+
+def evaluate_project() -> dict[str, Any]:
+    project = json.loads(PROJECT_PATH.read_text(encoding="utf-8"))
+    body = json.dumps({"project": project, "include_variants": True}).encode()
+    request = Request(
+        f"{API_URL}/api/v1/evaluate",
+        data=body,
+        method="POST",
+        headers={"Content-Type": "application/json", "Origin": PWA_ORIGIN},
+    )
+    result, headers = request_json(request)
+    if headers.get("access-control-allow-origin") != PWA_ORIGIN:
+        raise RuntimeError("Evaluation response is missing the expected CORS header")
+    if result.get("project_id") != project["project_id"]:
+        raise RuntimeError("Evaluation returned the wrong project identifier")
+    for required in ("results", "requirements", "indicators", "traceability"):
+        if not result.get(required):
+            raise RuntimeError(f"Evaluation is missing non-empty {required!r}")
+    alternatives = result.get("selected_alternatives", {})
+    if not all(alternatives.get(name) for name in ("eco", "balanced", "performance")):
+        raise RuntimeError("Evaluation did not produce all three required alternatives")
+    return result
+
+
+def main() -> int:
+    ready = wait_until_ready()
+    verify_preflight()
+    result = evaluate_project()
+    summary = {
+        "api": API_URL,
+        "version": ready.get("version"),
+        "algorithm_version": ready.get("algorithm_version"),
+        "project_id": result["project_id"],
+        "status": result["status"],
+        "variants": len(result.get("variants", [])),
+        "mandatory_gate_passed": result["requirements"]["mandatory_gate_passed"],
+    }
+    print(json.dumps(summary, ensure_ascii=False, indent=2))
+    return 0
+
+
+if __name__ == "__main__":
+    try:
+        raise SystemExit(main())
+    except Exception as exc:  # provide a concise CI error without suppressing failure
+        print(f"Live backend smoke failed: {exc}", file=sys.stderr)
+        raise
+

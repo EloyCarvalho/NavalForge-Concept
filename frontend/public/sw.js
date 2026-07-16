@@ -1,4 +1,4 @@
-const CACHE = 'navalforge-concept-v0.1.5'
+const CACHE = 'navalforge-concept-v0.1.6'
 const BUILD = []
 const CORE = [
   '/',

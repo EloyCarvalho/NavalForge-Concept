@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import type { Evaluation, Project } from '../types'
+import { APP_VERSION } from '../version'
 import { HullScene } from './HullScene'
 
 type Props = {
@@ -124,7 +125,7 @@ export function ModuleScreen({ screen, title, project, evaluation, reportBase }:
       content = <DataTable rows={Object.entries(evaluation.traceability).map(([key, value]) => ({ result: key, ...value }))} />
       break
     case 'settings':
-      content = <KeyValue data={{ version: '0.1.5', algorithm: evaluation.traceability.execution?.algorithm_version, project_revision: project.revision, api_url: import.meta.env.VITE_API_URL || 'não configurada — modo offline', locale: 'pt-BR', core_units: 'SI' }} />
+      content = <KeyValue data={{ version: APP_VERSION, algorithm: evaluation.traceability.execution?.algorithm_version, project_revision: project.revision, api_url: import.meta.env.VITE_API_URL || 'não configurada — modo offline', locale: 'pt-BR', core_units: 'SI' }} />
       break
     default:
       content = <p className="empty-state">Módulo preparado para evolução.</p>
