@@ -176,7 +176,13 @@ export default function App() {
 
     void loadSelection()
       .catch((reason: unknown) => {
-        if (!cancelled) setError(reason instanceof Error ? reason.message : 'Falha ao carregar demonstração')
+        if (cancelled) return
+        setError(reason instanceof Error ? reason.message : 'Falha ao carregar projeto')
+        if (selection.startsWith('project:')) {
+          const fallback = 'demo:service'
+          localStorage.setItem('navalforge-selection', fallback)
+          setSelection(fallback)
+        }
       })
       .finally(() => {
         if (!cancelled) setBusy(false)
@@ -258,12 +264,15 @@ export default function App() {
     setBusy(true)
     setError('')
     setSuccess('')
+    let savedRevisionLabel = ''
     try {
       const saved = await saveProject(project, baselineProject.revision, changeSummary)
+      savedRevisionLabel = saved.project.revision
       setProject(saved.project)
       setBaselineProject(structuredClone(saved.project))
       setDirty(false)
       setChangeSummary('Atualização pelo aplicativo móvel')
+      setSuccess(`Revisão ${saved.project.revision} salva no Neon.`)
       const [history, result] = await Promise.all([
         listProjectRevisions(saved.project.project_id),
         evaluateProject(saved.project),
@@ -275,7 +284,12 @@ export default function App() {
       setSuccess(`Revisão ${saved.project.revision} salva no Neon e cálculo atualizado.`)
       await refreshSavedProjects()
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : 'Falha ao salvar revisão')
+      const detail = reason instanceof Error ? reason.message : 'falha desconhecida'
+      setError(
+        savedRevisionLabel
+          ? `${savedRevisionLabel} foi salva, mas o recálculo não terminou: ${detail}`
+          : detail,
+      )
     } finally {
       setBusy(false)
     }
@@ -331,6 +345,10 @@ export default function App() {
 
   const downloadReport = async (format: 'pdf' | 'docx' | 'xlsx' | 'csv' | 'json') => {
     if (!project || !evaluation) return
+    if (dirty) {
+      setError('Salve e recalcule o rascunho antes de gerar um relatório rastreável.')
+      return
+    }
     setBusy(true)
     setError('')
     try {
