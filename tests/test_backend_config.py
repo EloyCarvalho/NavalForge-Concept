@@ -28,6 +28,20 @@ def test_cors_origins_are_normalized_and_deduplicated() -> None:
     assert settings.cors_origin_list == ["https://navalforge3d14.pages.dev"]
 
 
+def test_production_always_trusts_the_published_pwa_origins() -> None:
+    settings = Settings(
+        _env_file=None,
+        environment="production",
+        database_url="postgresql://user:secret@example.neon.tech/navalforge",
+        cors_origins="https://navalforge3d14.pages.dev",
+    )
+
+    assert settings.cors_origin_list == [
+        "https://navalforge3d14.pages.dev",
+        "https://navalforgeconcept.pages.dev",
+    ]
+
+
 def test_production_rejects_ephemeral_sqlite() -> None:
     with pytest.raises(ValidationError, match="PostgreSQL DATABASE_URL"):
         Settings(
