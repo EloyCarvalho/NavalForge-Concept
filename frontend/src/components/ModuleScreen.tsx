@@ -1,7 +1,14 @@
 import type { ReactNode } from 'react'
-import type { Evaluation, Project } from '../types'
+import type { Evaluation, Project, ProjectRevision } from '../types'
 import { APP_VERSION } from '../version'
 import { HullScene } from './HullScene'
+import {
+  ConfigurationEditor,
+  DimensionsEditor,
+  MissionEditor,
+  ProjectEditor,
+  RevisionHistory,
+} from './ProjectEditors'
 
 type Props = {
   screen: string
@@ -9,6 +16,11 @@ type Props = {
   project: Project
   evaluation: Evaluation
   reportBase: string
+  projectSource: 'demo' | 'database'
+  revisions: ProjectRevision[]
+  onProjectChange: (project: Project) => void
+  onLoadRevision: (revision: ProjectRevision) => void
+  onDownloadReport: (format: 'pdf' | 'docx' | 'xlsx' | 'csv' | 'json') => void
 }
 
 function format(value: unknown): string {
@@ -54,23 +66,52 @@ function DataTable({ rows }: { rows: Array<Record<string, unknown>> }) {
   )
 }
 
-export function ModuleScreen({ screen, title, project, evaluation, reportBase }: Props) {
+export function ModuleScreen({
+  screen,
+  title,
+  project,
+  evaluation,
+  reportBase,
+  projectSource,
+  revisions,
+  onProjectChange,
+  onLoadRevision,
+  onDownloadReport,
+}: Props) {
   let content: ReactNode
   const hydro = evaluation.results.hydrostatics
   const weights = evaluation.results.weights
 
   switch (screen) {
     case 'projects':
-      content = <KeyValue data={{ project_id: project.project_id, name: project.name, revision: project.revision, description: project.description, material: project.material, propulsion: project.propulsion_type }} />
+      content = (
+        <>
+          <div className={`persistence-notice ${projectSource}`}>
+            <strong>{projectSource === 'demo' ? 'MODELO DEMONSTRATIVO' : 'PROJETO PERSISTIDO NO NEON'}</strong>
+            <span>
+              {projectSource === 'demo'
+                ? 'Edite os campos e crie uma cópia para começar seu projeto. Não informe dados confidenciais nesta versão demonstrativa.'
+                : 'As alterações ficam locais até você salvar uma nova revisão.'}
+            </span>
+          </div>
+          <ProjectEditor project={project} onChange={onProjectChange} />
+          {projectSource === 'database' && (
+            <>
+              <h3>Histórico de revisões</h3>
+              <RevisionHistory revisions={revisions} onLoad={onLoadRevision} />
+            </>
+          )}
+        </>
+      )
       break
     case 'mission':
-      content = <><KeyValue data={project.mission as unknown as Record<string, unknown>} /><h3>Requisitos associados</h3><DataTable rows={evaluation.requirements.matrix} /></>
+      content = <MissionEditor project={project} onChange={onProjectChange} />
       break
     case 'dimensions':
-      content = <KeyValue data={project.geometry as unknown as Record<string, unknown>} />
+      content = <DimensionsEditor project={project} onChange={onProjectChange} />
       break
     case 'configuration':
-      content = <KeyValue data={{ material: project.material, propulsion_type: project.propulsion_type, crew: project.mission.crew, passengers: project.mission.passengers, payload_kg: project.mission.payload_kg }} />
+      content = <ConfigurationEditor project={project} onChange={onProjectChange} />
       break
     case 'hull':
       content = <HullScene project={project} evaluation={evaluation} />
@@ -115,8 +156,10 @@ export function ModuleScreen({ screen, title, project, evaluation, reportBase }:
     case 'reports':
       content = (
         <div className="download-grid">
-          {['pdf', 'docx', 'xlsx', 'csv', 'json'].map((extension) => (
-            <a key={extension} href={`${reportBase}.${extension}`} download>Baixar {extension.toUpperCase()}</a>
+          {(['pdf', 'docx', 'xlsx', 'csv', 'json'] as const).map((extension) => (
+            projectSource === 'demo'
+              ? <a key={extension} href={`${reportBase}.${extension}`} download>Baixar {extension.toUpperCase()}</a>
+              : <button key={extension} type="button" onClick={() => onDownloadReport(extension)}>Gerar {extension.toUpperCase()}</button>
           ))}
         </div>
       )

@@ -1,5 +1,6 @@
 """API-specific transport contracts."""
 
+from datetime import datetime
 from typing import Any, Literal
 
 from pydantic import BaseModel, Field
@@ -32,6 +33,31 @@ class ProjectListItem(BaseModel):
     name: str
     revision: str
     source: str = "database"
+    updated_at: datetime | None = None
+
+
+class ProjectCreateRequest(BaseModel):
+    project: Project
+    change_summary: str = Field(default="Projeto criado", max_length=500)
+
+
+class ProjectRevisionRequest(BaseModel):
+    project: Project
+    expected_revision: str = Field(min_length=1, max_length=40)
+    change_summary: str = Field(default="", max_length=500)
+
+
+class ProjectRevisionItem(BaseModel):
+    revision_id: str
+    project_id: str
+    revision: str
+    change_summary: str
+    created_at: datetime
+
+
+class ProjectSaveResponse(BaseModel):
+    project: Project
+    revision: ProjectRevisionItem
 
 
 class ReportRequest(BaseModel):

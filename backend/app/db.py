@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Generator
 from datetime import UTC, datetime
 
-from sqlalchemy import JSON, DateTime, String, Text, create_engine
+from sqlalchemy import JSON, DateTime, ForeignKey, String, Text, create_engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, sessionmaker
 
 from .config import get_settings
@@ -30,6 +30,23 @@ class ProjectRecord(Base):
         default=lambda: datetime.now(UTC),
         onupdate=lambda: datetime.now(UTC),
         nullable=False,
+    )
+
+
+class ProjectRevisionRecord(Base):
+    """Immutable project snapshot used for audit and rollback."""
+
+    __tablename__ = "project_revisions"
+
+    revision_id: Mapped[str] = mapped_column(String(80), primary_key=True)
+    project_id: Mapped[str] = mapped_column(
+        ForeignKey("projects.project_id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    revision: Mapped[str] = mapped_column(String(40), index=True, nullable=False)
+    change_summary: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    project_data: Mapped[dict] = mapped_column(JSON, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
     )
 
 

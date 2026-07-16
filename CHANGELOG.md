@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.7 — editable project workspace
+
+- Added creation and editing of persistent projects from the mobile PWA.
+- Added immutable project revision snapshots and optimistic concurrency control.
+- Added responsive editors for identity, mission, dimensions, configuration and requirements.
+- Added revision reopening, save-and-recalculate flow and live report generation.
+- Kept the engineering algorithm identifier at `navalforge-core-0.1.5`; this
+  release changes project workflow and persistence, not the calculation method.
+
 ## 0.1.6 — live backend release
 
 - Deployed the Docker FastAPI service on Render with persistent Neon PostgreSQL.

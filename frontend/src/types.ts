@@ -1,3 +1,60 @@
+export type RequirementKind =
+  | 'mandatory'
+  | 'desirable'
+  | 'constraint'
+  | 'score'
+  | 'assumption'
+  | 'incomplete'
+  | 'contradictory'
+  | 'clarification'
+
+export type Requirement = {
+  id: string
+  description: string
+  category: string
+  metric: string | null
+  operator: '<=' | '>=' | '==' | 'in' | 'defined'
+  value: number | string | string[] | null
+  unit: string
+  source: string
+  priority: number
+  acceptance_criterion: string
+  verification_method: string
+  notes: string
+  revision: string
+  kind: RequirementKind
+}
+
+export type Mission = {
+  vessel_type: string
+  navigation_area: string
+  cruise_speed_kn: number
+  max_speed_kn: number
+  endurance_h: number
+  target_range_nm: number
+  payload_kg: number
+  crew: number
+  passengers: number
+}
+
+export type Geometry = {
+  revision: string
+  model_level: 'parametric' | 'offsets'
+  loa_m: number
+  lwl_m: number
+  beam_m: number
+  chine_beam_m: number
+  depth_m: number
+  deadrise_deg: number
+  flare_deg: number
+  transom_beam_m: number | null
+  chine_count: number
+  design_draft_m: number
+  bow_rise_m: number
+  stations: number
+  offsets: Array<Record<string, number>>
+}
+
 export type Project = {
   project_id: string
   name: string
@@ -5,28 +62,45 @@ export type Project = {
   description: string
   material: string
   propulsion_type: string
-  mission: {
-    vessel_type: string
-    cruise_speed_kn: number
-    max_speed_kn: number
-    target_range_nm: number
-    payload_kg: number
-    crew: number
-    passengers: number
-  }
-  geometry: {
-    loa_m: number
-    lwl_m: number
-    beam_m: number
-    chine_beam_m: number
-    depth_m: number
-    deadrise_deg: number
-    design_draft_m: number
-  }
+  water_density_kg_m3: number
+  mission: Mission
+  geometry: Geometry
   weights: Array<Record<string, unknown>>
   tanks: Array<Record<string, unknown>>
-  requirements: Array<Record<string, unknown>>
+  loading_conditions: Array<Record<string, unknown>>
+  active_condition_id: string
+  requirements: Requirement[]
   downflooding_points: Array<Record<string, unknown>>
+  propulsive_efficiency: number
+  transmission_efficiency: number
+  sea_margin_fraction: number
+  growth_margin_fraction: number
+  power_reserve_fraction: number
+  air_drag_area_m2: number
+  roughness_m: number
+  estimated_build_cost_brl: number
+  assumptions: string[]
+}
+
+export type ProjectListItem = {
+  project_id: string
+  name: string
+  revision: string
+  source: string
+  updated_at: string | null
+}
+
+export type ProjectRevision = {
+  revision_id: string
+  project_id: string
+  revision: string
+  change_summary: string
+  created_at: string
+}
+
+export type ProjectSaveResponse = {
+  project: Project
+  revision: ProjectRevision
 }
 
 export type Alternative = {
