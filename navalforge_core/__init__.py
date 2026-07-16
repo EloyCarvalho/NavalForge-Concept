@@ -8,4 +8,4 @@ from .evaluator import avaliar_projeto, evaluate_project
 from .models import Project
 
 __all__ = ["Project", "avaliar_projeto", "evaluate_project"]
-__version__ = "0.1.6"
+__version__ = "0.1.7"
