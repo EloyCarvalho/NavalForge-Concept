@@ -2,7 +2,7 @@
 
 **Plataforma aberta, modular e auditável para projeto conceitual e básico de lanchas.**
 
-Versão pública conectada: **0.1.6**
+Versão pública conectada: **0.1.7**
 
 NavalForge Concept transforma requisitos de missão em alternativas preliminares
 de lanchas monocasco de planeio entre aproximadamente 5 e 15 m. O mesmo pipeline
@@ -35,6 +35,10 @@ de variantes.
 - relatórios PDF, DOCX, XLSX, CSV e JSON;
 - FastAPI, PostgreSQL, SQLAlchemy, Alembic, Redis e Celery;
 - PWA React/TypeScript, Three.js e Plotly, instalável e responsiva;
+- projetos editáveis e persistidos no Neon, com revisões imutáveis P1, P2…;
+- edição móvel de missão, dimensões, configuração e requisitos;
+- controle de conflito para impedir sobrescrita silenciosa de revisão;
+- restauração de revisão histórica como novo rascunho e recálculo automático;
 - três projetos demonstrativos sintéticos: 7 m, 10 m e 12 m;
 - Docker Compose, testes, CI e scripts Windows/Linux.
 
@@ -120,7 +124,7 @@ $env:VITE_API_URL="http://localhost:8000"; npm run dev
 ## PWA instalável
 
 A interface conserva três resultados previamente calculados para contingência
-offline. A distribuição pública 0.1.6 é compilada com a API do Render:
+offline. A distribuição pública 0.1.7 é compilada com a API do Render:
 
 ```bash
 cd frontend
@@ -177,8 +181,6 @@ A estrutura de saída inclui:
     "performance": {}
   }
 }
-```
-
 Uma pontuação alta nunca mascara falha obrigatória. Quando um requisito
 obrigatório falha, o status contém:
 
@@ -192,7 +194,13 @@ obrigatório falha, o status contém:
 | `GET` | `/ready` | saúde da API e conexão com o banco |
 | `GET` | `/api/v1/projects/demo` | três projetos sintéticos |
 | `GET` | `/api/v1/projects` | projetos persistidos |
-| `PUT` | `/api/v1/projects/{id}` | cria/atualiza projeto |
+| `POST` | `/api/v1/projects` | cria projeto e revisão inicial |
+| `GET` | `/api/v1/projects/{id}` | lê a revisão corrente |
+| `POST` | `/api/v1/projects/{id}/revisions` | salva nova revisão com controle de conflito |
+| `GET` | `/api/v1/projects/{id}/revisions` | lista o histórico imutável |
+| `GET` | `/api/v1/projects/{id}/revisions/{revision_id}` | lê uma revisão histórica |
+| `DELETE` | `/api/v1/projects/{id}` | exclui projeto e seu histórico |
+| `PUT` | `/api/v1/projects/{id}` | compatibilidade legada, também revisionada |
 | `POST` | `/api/v1/evaluate` | cálculo síncrono |
 | `POST` | `/api/v1/jobs` | cálculo por job |
 | `GET` | `/api/v1/jobs/{id}` | consulta do job |
@@ -242,7 +250,7 @@ Todos os dados são sintéticos e identificados como demonstração:
 
 Relatórios ficam em `examples/generated/` e também são empacotados na PWA.
 
-## Limitações reais da versão 0.1.6
+## Limitações reais da versão 0.1.7
 
 - casco paramétrico simplificado; offsets verificados ainda não dirigem toda a interface;
 - curva GZ por aproximação de costados verticais, não geometria inclinada completa;
@@ -252,13 +260,16 @@ Relatórios ficam em `examples/generated/` e também são empacotados na PWA.
 - estrutura usa triagem de placa e não regra completa de classe;
 - importação DXF/STL/STEP/IGES/Rhino/DELFTship está preparada como evolução;
 - não há CFD, FEA ou estabilidade avariada automática nesta versão;
+- o ambiente público ainda não possui login: os projetos persistidos são
+  demonstrativos e não devem conter dados pessoais, comerciais ou técnicos sigilosos;
+- pesos, tanques e condições permanecem somente leitura na PWA desta versão;
 - autenticação multiusuário e armazenamento de objetos exigem implantação adicional;
 - critérios normativos precisam ser selecionados e configurados pelo engenheiro.
 
 ## Próximo incremento recomendado
 
-1. Tornar requisitos, geometria, pesos e condições totalmente editáveis na PWA.
-2. Adicionar autenticação e separar projetos por usuário/organização.
+1. Adicionar autenticação e separar projetos por usuário/organização.
+2. Tornar pesos, tanques e condições de carregamento editáveis na PWA.
 3. Habilitar Redis/Celery para jobs pesados fora do plano demonstrativo gratuito.
 4. Importar offsets e malhas verificadas.
 5. Validar módulo a módulo com cálculos manuais, exemplos publicados e ensaios.
