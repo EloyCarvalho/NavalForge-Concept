@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: navalforge-concept-api
+    runtime: docker
+    plan: free
+    region: virginia
+    branch: main
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .
+    healthCheckPath: /ready
+    autoDeployTrigger: commit
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: APP_VERSION
+        value: 0.1.5
+      - key: DATABASE_URL
+        sync: false
+      - key: CORS_ORIGINS
+        value: https://navalforge3d14.pages.dev
+      - key: CELERY_ENABLED
+        value: "false"
+      - key: STORAGE_DIR
+        value: /tmp/navalforge/storage

@@ -31,7 +31,7 @@ services:
       context: .
       dockerfile: backend/Dockerfile
     environment:
-      ENVIRONMENT: ${ENVIRONMENT:-production}
+      ENVIRONMENT: ${ENVIRONMENT:-development}
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-navalforge}:${POSTGRES_PASSWORD:-navalforge}@db:5432/${POSTGRES_DB:-navalforge}
       REDIS_URL: redis://redis:6379/0
       STORAGE_DIR: /app/storage

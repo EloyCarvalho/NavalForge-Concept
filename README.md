@@ -38,6 +38,16 @@ de variantes.
 - três projetos demonstrativos sintéticos: 7 m, 10 m e 12 m;
 - Docker Compose, testes, CI e scripts Windows/Linux.
 
+## Implantação pública recomendada
+
+O repositório inclui `render.yaml` para publicar a API Docker no Render e usar
+PostgreSQL persistente no Neon, mantendo a PWA no Cloudflare Pages. Essa
+configuração desativa Celery/Redis inicialmente e executa jobs de forma síncrona
+para caber no ambiente demonstrativo gratuito.
+
+Siga o passo a passo em [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). Nunca grave a
+`DATABASE_URL` do Neon no GitHub; ela deve ser cadastrada como segredo no Render.
+
 ## Execução mais simples — Docker
 
 Requisitos: Docker Desktop no Windows ou Docker Engine + Compose no Linux.
@@ -171,6 +181,7 @@ obrigatório falha, o status contém:
 | Método | Rota | Função |
 |---|---|---|
 | `GET` | `/health` | saúde e versão |
+| `GET` | `/ready` | saúde da API e conexão com o banco |
 | `GET` | `/api/v1/projects/demo` | três projetos sintéticos |
 | `GET` | `/api/v1/projects` | projetos persistidos |
 | `PUT` | `/api/v1/projects/{id}` | cria/atualiza projeto |
