@@ -47,7 +47,8 @@ VITE_API_URL=https://navalforge-concept-api.onrender.com npm run build
 ```
 
 Publish `frontend/dist` as a new Cloudflare Pages production deployment. The API
-already permits `https://navalforge3d14.pages.dev` through CORS. If the PWA
+permits both `https://navalforgeconcept.pages.dev` and the legacy
+`https://navalforge3d14.pages.dev` origin through CORS. If the PWA
 domain changes, update `CORS_ORIGINS` in Render and redeploy.
 
 ### Production limitations of the free demonstration
