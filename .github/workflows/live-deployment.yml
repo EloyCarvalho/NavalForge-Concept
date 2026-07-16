@@ -10,6 +10,18 @@ on:
       - "scripts/smoke_live_backend.py"
       - "backend/**"
       - "frontend/**"
+      - "pyproject.toml"
+      - "render.yaml"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/live-deployment.yml"
+      - "scripts/smoke_live_backend.py"
+      - "backend/**"
+      - "frontend/**"
+      - "pyproject.toml"
+      - "render.yaml"
 
 jobs:
   render-neon-pwa:
@@ -18,6 +30,7 @@ jobs:
     env:
       LIVE_API_URL: https://navalforge-concept-api.onrender.com
       LIVE_PWA_ORIGIN: https://navalforge3d14.pages.dev
+      VERIFY_DEPLOYED_VERSION: ${{ github.event_name == 'push' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

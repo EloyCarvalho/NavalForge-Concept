@@ -10,6 +10,7 @@ import json
 import os
 import sys
 import time
+import tomllib
 from pathlib import Path
 from typing import Any
 from urllib.error import HTTPError, URLError
@@ -22,6 +23,13 @@ PWA_ORIGIN = os.environ.get(
     "LIVE_PWA_ORIGIN", "https://navalforge3d14.pages.dev"
 ).rstrip("/")
 PROJECT_PATH = Path(__file__).resolve().parents[1] / "examples" / "nf-demo-service-7m.json"
+PYPROJECT_PATH = Path(__file__).resolve().parents[1] / "pyproject.toml"
+VERIFY_DEPLOYED_VERSION = os.environ.get("VERIFY_DEPLOYED_VERSION", "false").lower() == "true"
+
+
+def expected_app_version() -> str:
+    with PYPROJECT_PATH.open("rb") as file:
+        return str(tomllib.load(file)["project"]["version"])
 
 
 def request_json(request: Request, timeout: int = 300) -> tuple[Any, Any]:
@@ -34,12 +42,18 @@ def request_json(request: Request, timeout: int = 300) -> tuple[Any, Any]:
 
 def wait_until_ready() -> dict[str, Any]:
     last_error: Exception | None = None
+    expected_version = expected_app_version()
     for attempt in range(1, 31):
         try:
             payload, _ = request_json(Request(f"{API_URL}/ready"), timeout=30)
-            if payload.get("status") == "healthy":
+            version_matches = payload.get("version") == expected_version
+            if payload.get("status") == "healthy" and (
+                not VERIFY_DEPLOYED_VERSION or version_matches
+            ):
                 return payload
-            last_error = RuntimeError(f"Unexpected readiness payload: {payload!r}")
+            last_error = RuntimeError(
+                f"Readiness has not reached app {expected_version}: {payload!r}"
+            )
         except (HTTPError, URLError, TimeoutError, RuntimeError) as exc:
             last_error = exc
         print(f"Readiness attempt {attempt}/30 failed; retrying in 10 seconds")
@@ -95,6 +109,7 @@ def main() -> int:
     summary = {
         "api": API_URL,
         "version": ready.get("version"),
+        "expected_version": expected_app_version(),
         "algorithm_version": ready.get("algorithm_version"),
         "project_id": result["project_id"],
         "status": result["status"],
@@ -111,4 +126,3 @@ if __name__ == "__main__":
     except Exception as exc:  # provide a concise CI error without suppressing failure
         print(f"Live backend smoke failed: {exc}", file=sys.stderr)
         raise
-
