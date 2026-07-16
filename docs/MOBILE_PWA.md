@@ -28,7 +28,7 @@ VITE_API_URL=https://navalforge-concept-api.onrender.com npm run build
 
 Add the PWA HTTPS origin to `CORS_ORIGINS` on the backend.
 
-The current public PWA is <https://navalforge3d14.pages.dev>. After opening it,
+The current public PWA is <https://navalforgeconcept.pages.dev>. After opening it,
 select a case and touch **Executar projeto**. A successful live calculation
 changes the status seal from **DEMO OFFLINE** to **BACKEND ONLINE**.
 
