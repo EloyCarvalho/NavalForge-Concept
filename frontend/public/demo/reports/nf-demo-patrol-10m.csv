@@ -1,0 +1,8 @@
+requirement_id,description,kind,required,actual,unit,passed
+REQ10-LOA,Overall length shall not exceed 10.50 m,mandatory,10.5,10.0,m,True
+REQ10-BEAM,Beam shall not exceed 3.30 m,mandatory,3.3,3.1,m,True
+REQ10-SPEED,Maximum speed shall be at least 35 kn,mandatory,35.0,38.0,kn,True
+REQ10-RANGE,Range shall be at least 170 nmi,mandatory,170.0,510.2880704456275,nmi,True
+REQ10-GM,Preliminary corrected GM shall exceed 0.45 m,mandatory,0.45,0.6272697216930424,m,True
+REQ10-FB,Preliminary freeboard shall exceed 0.50 m,mandatory,0.5,0.8802774910584624,m,True
+REQ10-PAYLOAD,Payload shall be at least 500 kg,mandatory,500.0,500.0,kg,True

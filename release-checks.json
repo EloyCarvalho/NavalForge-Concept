@@ -1,0 +1,22 @@
+{
+  "product": "NavalForge Concept",
+  "version": "0.1.5",
+  "release": "reconstructed",
+  "checked_at": "2026-07-15",
+  "checks": {
+    "python_unittest": { "passed": 21, "failed": 0 },
+    "demo_projects": { "evaluated": 3, "mandatory_gate_passed": 3 },
+    "report_formats": ["pdf", "docx", "xlsx", "csv", "json"],
+    "typescript": "passed",
+    "eslint": "passed with zero warnings",
+    "vite_production_build": "passed",
+    "pwa_hashed_asset_cache": "verified",
+    "npm_production_audit": "0 vulnerabilities",
+    "http_smoke_test": "passed",
+    "python_compileall": "passed",
+    "docker_compose_yaml": "parsed and service graph verified",
+    "live_fastapi_start": "not run: dependencies unavailable in reconstruction container",
+    "docker_image_build": "not run: Docker unavailable in reconstruction container"
+  },
+  "technical_notice": "Automated software tests are not validation of a real vessel or statutory approval."
+}

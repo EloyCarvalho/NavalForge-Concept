@@ -1,0 +1,5 @@
+[
+  {"id":"AL5083","name":"Marine aluminum 5083","density_kg_m3":2660,"allowable_mpa_demo":95,"notice":"Verify temper, weld zone and governing rule."},
+  {"id":"HDPE100","name":"PE100 HDPE","density_kg_m3":955,"allowable_mpa_demo":7,"notice":"Time, temperature, creep and weld factors govern."},
+  {"id":"GFRP-DEMO","name":"Demonstrative GFRP laminate","density_kg_m3":1650,"allowable_mpa_demo":55,"notice":"A laminate schedule and test-backed properties are mandatory."}
+]
