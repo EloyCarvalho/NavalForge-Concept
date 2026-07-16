@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Annotated, Any
 from uuid import uuid4
 
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, HTTPException, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from sqlalchemy import text
@@ -29,8 +29,30 @@ from navalforge_core.reports import (
 
 from .config import get_settings
 from .db import CalculationJobRecord, get_session, init_db
-from .repository import get_project, list_projects, save_job, upsert_project
-from .schemas import EvaluationRequest, HealthResponse, JobResponse, ProjectListItem, ReportRequest
+from .repository import (
+    ProjectAlreadyExistsError,
+    ProjectNotFoundError,
+    RevisionConflictError,
+    create_project,
+    delete_project,
+    get_project,
+    get_project_revision,
+    list_project_revisions,
+    list_projects,
+    save_job,
+    save_project_revision,
+)
+from .schemas import (
+    EvaluationRequest,
+    HealthResponse,
+    JobResponse,
+    ProjectCreateRequest,
+    ProjectListItem,
+    ProjectRevisionItem,
+    ProjectRevisionRequest,
+    ProjectSaveResponse,
+    ReportRequest,
+)
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
 logger = logging.getLogger("navalforge.api")
@@ -115,9 +137,31 @@ def project_list(session: SessionDep) -> list[ProjectListItem]:
             project_id=record.project_id,
             name=record.name,
             revision=record.revision,
+            updated_at=record.updated_at,
         )
         for record in records
     ]
+
+
+@app.post(
+    f"{settings.api_prefix}/projects",
+    response_model=ProjectSaveResponse,
+    status_code=status.HTTP_201_CREATED,
+    tags=["projects"],
+)
+def project_create(payload: ProjectCreateRequest, session: SessionDep) -> ProjectSaveResponse:
+    try:
+        _, snapshot = create_project(
+            session,
+            payload.project,
+            change_summary=payload.change_summary,
+        )
+    except ProjectAlreadyExistsError as exc:
+        raise HTTPException(status_code=409, detail="Project ID already exists") from exc
+    return ProjectSaveResponse(
+        project=payload.project,
+        revision=ProjectRevisionItem.model_validate(snapshot, from_attributes=True),
+    )
 
 
 @app.get(f"{settings.api_prefix}/projects/{{project_id}}", response_model=Project, tags=["projects"])
@@ -136,8 +180,99 @@ def project_put(
 ) -> Project:
     if project_id != project.project_id:
         raise HTTPException(status_code=409, detail="Path and payload project IDs differ")
-    upsert_project(session, project)
-    return project
+    record = get_project(session, project_id)
+    if record is None:
+        create_project(session, project, change_summary="Projeto criado pela rota legada")
+        return project
+    try:
+        _, _, revised_project = save_project_revision(
+            session,
+            project,
+            expected_revision=project.revision,
+            change_summary="Atualização pela rota legada",
+        )
+    except RevisionConflictError as exc:
+        raise HTTPException(
+            status_code=409,
+            detail="Project changed in another session; reload before saving",
+        ) from exc
+    return revised_project
+
+
+@app.post(
+    f"{settings.api_prefix}/projects/{{project_id}}/revisions",
+    response_model=ProjectSaveResponse,
+    tags=["projects"],
+)
+def project_revision_create(
+    project_id: str,
+    payload: ProjectRevisionRequest,
+    session: SessionDep,
+) -> ProjectSaveResponse:
+    if project_id != payload.project.project_id:
+        raise HTTPException(status_code=409, detail="Path and payload project IDs differ")
+    try:
+        _, snapshot, revised_project = save_project_revision(
+            session,
+            payload.project,
+            expected_revision=payload.expected_revision,
+            change_summary=payload.change_summary,
+        )
+    except ProjectNotFoundError as exc:
+        raise HTTPException(status_code=404, detail="Project not found") from exc
+    except RevisionConflictError as exc:
+        raise HTTPException(
+            status_code=409,
+            detail="Project changed in another session; reload before saving",
+        ) from exc
+    return ProjectSaveResponse(
+        project=revised_project,
+        revision=ProjectRevisionItem.model_validate(snapshot, from_attributes=True),
+    )
+
+
+@app.get(
+    f"{settings.api_prefix}/projects/{{project_id}}/revisions",
+    response_model=list[ProjectRevisionItem],
+    tags=["projects"],
+)
+def project_revision_list(
+    project_id: str,
+    session: SessionDep,
+) -> list[ProjectRevisionItem]:
+    if get_project(session, project_id) is None:
+        raise HTTPException(status_code=404, detail="Project not found")
+    return [
+        ProjectRevisionItem.model_validate(record, from_attributes=True)
+        for record in list_project_revisions(session, project_id)
+    ]
+
+
+@app.get(
+    f"{settings.api_prefix}/projects/{{project_id}}/revisions/{{revision_id}}",
+    response_model=Project,
+    tags=["projects"],
+)
+def project_revision_get(
+    project_id: str,
+    revision_id: str,
+    session: SessionDep,
+) -> Project:
+    record = get_project_revision(session, project_id, revision_id)
+    if record is None:
+        raise HTTPException(status_code=404, detail="Project revision not found")
+    return Project.model_validate(record.project_data)
+
+
+@app.delete(
+    f"{settings.api_prefix}/projects/{{project_id}}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    tags=["projects"],
+)
+def project_delete(project_id: str, session: SessionDep) -> Response:
+    if not delete_project(session, project_id):
+        raise HTTPException(status_code=404, detail="Project not found")
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @app.post(f"{settings.api_prefix}/evaluate", response_model=EvaluationResult, tags=["calculations"])
