@@ -1,7 +1,7 @@
 {
   "product": "NavalForge Concept",
-  "version": "0.1.6",
-  "release": "live-backend",
+  "version": "0.1.7",
+  "release": "editable-project-workspace",
   "date": "2026-07-16",
   "algorithm_version": "navalforge-core-0.1.5",
   "coordinate_system_3d": "X longitudinal, Y vertical up, Z transverse",
