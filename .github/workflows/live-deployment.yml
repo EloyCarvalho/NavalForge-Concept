@@ -29,7 +29,7 @@ jobs:
     timeout-minutes: 10
     env:
       LIVE_API_URL: https://navalforge-concept-api.onrender.com
-      LIVE_PWA_ORIGIN: https://navalforgeconcept.pages.dev
+      LIVE_PWA_ORIGIN: ${{ github.event_name == 'push' && 'https://navalforgeconcept.pages.dev' || 'https://navalforge3d14.pages.dev' }}
       VERIFY_DEPLOYED_VERSION: ${{ github.event_name == 'push' }}
     steps:
       - uses: actions/checkout@v4
