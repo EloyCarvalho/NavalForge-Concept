@@ -54,8 +54,18 @@ class CalculationJobRecord(Base):
 
 
 settings = get_settings()
-connect_args = {"check_same_thread": False} if settings.database_url.startswith("sqlite") else {}
-engine = create_engine(settings.database_url, pool_pre_ping=True, connect_args=connect_args)
+database_url = settings.sqlalchemy_database_url
+is_sqlite = database_url.startswith("sqlite")
+connect_args = {"check_same_thread": False} if is_sqlite else {}
+engine_options = {
+    "pool_pre_ping": True,
+    "connect_args": connect_args,
+}
+if not is_sqlite:
+    # Managed/serverless PostgreSQL can retire idle connections. Recycle them
+    # proactively and keep the pool intentionally small for free-tier limits.
+    engine_options.update(pool_recycle=300, pool_size=5, max_overflow=5)
+engine = create_engine(database_url, **engine_options)
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 
 

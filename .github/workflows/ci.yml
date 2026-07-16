@@ -40,3 +40,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: docker compose config --quiet
+
+  backend-container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -f backend/Dockerfile -t navalforge-concept-api .
+      - name: Start API container and verify health
+        run: |
+          docker run --detach --name navalforge-api --publish 8000:8000 navalforge-concept-api
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:8000/ready >/dev/null; then
+              break
+            fi
+            if [ "$attempt" -eq 30 ]; then
+              docker logs navalforge-api
+              exit 1
+            fi
+            sleep 2
+          done
+          curl --fail --silent http://127.0.0.1:8000/health
+          curl --fail --silent http://127.0.0.1:8000/ready

@@ -12,6 +12,7 @@ from uuid import uuid4
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from navalforge_core.constants import ALGORITHM_VERSION
@@ -64,6 +65,18 @@ app.add_middleware(
 )
 
 
+@app.get("/", include_in_schema=False)
+def root() -> dict[str, str]:
+    return {
+        "service": settings.app_name,
+        "version": settings.app_version,
+        "status": "online",
+        "health": "/health",
+        "readiness": "/ready",
+        "documentation": "/docs",
+    }
+
+
 @app.get("/health", response_model=HealthResponse, tags=["system"])
 def health() -> HealthResponse:
     return HealthResponse(
@@ -72,6 +85,14 @@ def health() -> HealthResponse:
         version=settings.app_version,
         algorithm_version=ALGORITHM_VERSION,
     )
+
+
+@app.get("/ready", response_model=HealthResponse, tags=["system"])
+def readiness(session: SessionDep) -> HealthResponse:
+    """Confirm both the API process and its database are ready."""
+
+    session.execute(text("SELECT 1"))
+    return health()
 
 
 @app.get(f"{settings.api_prefix}/projects/demo", tags=["projects"])
