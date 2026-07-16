@@ -84,7 +84,7 @@ npm ci
 npm run build
 ```
 
-Publish the contents of `frontend/dist`. The public 0.1.6 package uses
+Publish the contents of `frontend/dist`. The public 0.1.7 package uses
 `https://navalforge-concept-api.onrender.com`; leave `VITE_API_URL` empty only
 when intentionally building the offline demonstration. CORS must list the PWA
 origin.
@@ -97,3 +97,7 @@ alembic upgrade head
 
 The API also creates missing tables on startup for the demonstrative deployment.
 Use explicit Alembic migrations for controlled environments.
+
+Version 0.1.7 adds `project_revisions`. Existing demonstrative Render/Neon
+deployments receive the missing table through startup metadata creation; controlled
+deployments should apply migration `0002` with `alembic upgrade head`.
